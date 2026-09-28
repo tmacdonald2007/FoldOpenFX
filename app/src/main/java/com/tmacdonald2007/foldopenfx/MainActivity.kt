@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 
 class MainActivity : Activity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -33,44 +34,91 @@ class MainActivity : Activity() {
         })
 
         root.addView(TextView(this).apply {
-            text = "\nPrototype for a foldable opening/closing visual effect.\n\nThe service watches the hinge-angle sensor and draws a lightweight center-crease overlay while the phone is opening or closing."
+            text = """
+                
+                Prototype for a foldable opening/closing visual effect.
+                
+                The service watches the hinge-angle sensor and draws a lightweight center-crease overlay while the phone is opening or closing.
+            """.trimIndent()
+
             textSize = 17f
             setTextColor(Color.LTGRAY)
         })
 
         root.addView(Button(this).apply {
             text = "Grant overlay permission"
+
             setOnClickListener {
-                startActivity(Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
-                ))
+                startActivity(
+                    Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:$packageName")
+                    )
+                )
             }
         })
 
         root.addView(Button(this).apply {
             text = "Enable FoldOpenFX"
+
             setOnClickListener {
                 if (!Settings.canDrawOverlays(this@MainActivity)) {
-                    Toast.makeText(this@MainActivity, "Grant overlay permission first.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Grant overlay permission first.",
+                        Toast.LENGTH_LONG
+                    ).show()
+
                     return@setOnClickListener
                 }
-                if (Build.VERSION.SDK_INT >= 33 &&
-                    checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 100)
+
+                if (
+                    Build.VERSION.SDK_INT >= 33 &&
+                    checkSelfPermission(
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    requestPermissions(
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        100
+                    )
                 }
-                val intent = Intent(this@MainActivity, FoldFxService::class.java)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(intent)
-                else startService(intent)
-                Toast.makeText(this, "FoldOpenFX enabled.", Toast.LENGTH_SHORT).show()
+
+                val intent = Intent(
+                    this@MainActivity,
+                    FoldFxService::class.java
+                )
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(intent)
+                } else {
+                    startService(intent)
+                }
+
+                Toast.makeText(
+                    this@MainActivity,
+                    "FoldOpenFX enabled.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
 
         root.addView(Button(this).apply {
             text = "Disable FoldOpenFX"
+
             setOnClickListener {
-                stopService(Intent(this@MainActivity, FoldFxService::class.java))
-                Toast.makeText(this, "FoldOpenFX disabled.", Toast.LENGTH_SHORT).show()
+                stopService(
+                    Intent(
+                        this@MainActivity,
+                        FoldFxService::class.java
+                    )
+                )
+
+                Toast.makeText(
+                    this@MainActivity,
+                    "FoldOpenFX disabled.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
 
