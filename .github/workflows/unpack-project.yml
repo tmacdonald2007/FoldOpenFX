@@ -1,0 +1,34 @@
+name: Unpack FoldOpenFX Project
+
+on:
+  push:
+    paths:
+      - "FoldOpenFX-project.zip"
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Unpack project
+        run: |
+          unzip -o FoldOpenFX-project.zip -d .
+          rm FoldOpenFX-project.zip
+
+      - name: Commit project files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Add FoldOpenFX Android project"
+          git push
